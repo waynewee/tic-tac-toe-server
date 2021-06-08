@@ -9,7 +9,7 @@ const { PIECE } = require('./piece-types')
 const app = express();
 const port = 8000;
 
-const production = process.env.NODE_ENV
+const production = process.env.NODE_ENV === 'production'
 
 let origin = `http://localhost:3000`
 
