@@ -9,8 +9,16 @@ const { PIECE } = require('./piece-types')
 const app = express();
 const port = 8000;
 
+const production = process.env.NODE_ENV
+
+let origin = `http://localhost:3000`
+
+if (production) {
+  origin = `http://18.219.147.206`
+}
+
 let corsOptions = {
-  origin: 'http://localhost:3000',
+  origin,
   credentials: true
 }
 
