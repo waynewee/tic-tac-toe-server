@@ -14,7 +14,7 @@ const production = process.env.NODE_ENV
 let origin = `http://localhost:3000`
 
 if (production) {
-  origin = `http://18.219.147.206`
+  origin = `http://ec2-18-219-147-206.us-east-2.compute.amazonaws.com`
 }
 
 let corsOptions = {
