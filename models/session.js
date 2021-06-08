@@ -1,21 +1,18 @@
 const mongoose = require('mongoose')
 const randomstring = require('randomstring')
+const { PIECE } = require('../piece-types')
 
 const sessionSchema = mongoose.Schema({
   id: String,
   board: Array,
-  boardSize: Number
+  boardSize: Number,
+  homePlayerName: String,
+  awayPlayerName: String
 })
-
-const PIECE = {
-  EMPTY: "EMPTY",
-  CIRCLE: "CIRCLE",
-  CROSS: "CROSS"
-}
 
 class Session extends mongoose.Model {
 
-  static async _new(boardSize){
+  static async _new(boardSize, playerName){
 
     if (boardSize % 2 == 0){
       throw "Board size must be odd!"
@@ -29,12 +26,13 @@ class Session extends mongoose.Model {
     const newSession = new this({
       id: id.toString(),
       board: this.initBoard(boardSize),
-      boardSize
+      boardSize,
+      homePlayerName: playerName
     })
 
     await newSession.save()
 
-    return newSession.id
+    return newSession
   }
 
   static initBoard(boardSize) {

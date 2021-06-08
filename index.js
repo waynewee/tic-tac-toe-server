@@ -2,7 +2,9 @@ const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
 
-const { session } = require('./models/session')
+const { session } = require('./models/session');
+const { generateRandomName } = require('./modules/name-generator');
+const { PIECE } = require('./piece-types')
 
 const app = express();
 const port = 8000;
@@ -14,17 +16,34 @@ let corsOptions = {
 
 app.use(cors(corsOptions))
 
-app.get('/:boardSize', async (req, res, next) => {
+app.get('/new/:boardSize', async (req, res, next) => {
   try {
-    const sessionId = await session._new(req.params.boardSize)
-    res.json({ sessionId })
+    const playerName = generateRandomName()
+    const _session = await session._new(req.params.boardSize, playerName)
+    res.json({ session: _session, playerName })
   } catch (e) {next(e)}
 });
 
-app.get('/session/:sessionId', async (req, res, next) => {
+app.get('/:sessionId', async (req, res, next) => {
+ 
   try {
-    const _session = await session.findOne({ id: req.params.sessionId })
-    res.json({ board: _session.board })
+    let { playerName } = req.query
+
+    let _session
+
+    if (!playerName) {
+      playerName = generateRandomName()
+      _session = await session.findOneAndUpdate({
+        id: req.params.sessionId
+      }, {
+        $set: {
+          awayPlayerName: playerName
+        }
+      })
+    } else {
+      _session = await session.findOne({ id: req.params.sessionId })
+    }
+    res.json({ session: _session, playerName })
   } catch (e) {next(e)}
 
 })
@@ -49,8 +68,6 @@ app.post('/:sessionId', async (req, res, next) => {
         board
       }
     })
-
-    console.log("HELOL")
 
     res.sendStatus(200)
   } catch(e) { next(e) }
