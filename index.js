@@ -11,6 +11,8 @@ const port = 8000;
 
 const production = process.env.NODE_ENV === 'production'
 
+console.log(process.env.NODE_ENV)
+
 let origin = `http://localhost:3000`
 
 if (production) {
