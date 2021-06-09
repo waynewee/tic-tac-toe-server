@@ -93,6 +93,19 @@ app.post('/:sessionId', async (req, res, next) => {
   } catch(e) { next(e) }
 })
 
+app.delete('/:sessionId', async (req, res, next) => {
+
+  try {
+    const _session = session.findOne({ _id: req.params.sessionId })
+    if (_session) {
+      await session.deleteOne({ id: req.params.sessionId })
+    }
+    res.sendStatus(200)
+
+  } catch(e) {next(e)}
+
+})
+
 app.listen(port);
 
 mongoose.connect(`mongodb://127.0.0.1/tic-tac-toe`)
