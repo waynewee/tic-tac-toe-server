@@ -4,14 +4,11 @@ const cors = require('cors')
 
 const { session } = require('./models/session');
 const { generateRandomName } = require('./modules/name-generator');
-const { PIECE } = require('./piece-types')
 
 const app = express();
 const port = 8000;
 
 const production = process.env.NODE_ENV === 'production'
-
-console.log(process.env.NODE_ENV)
 
 let origin = `http://localhost:3000`
 
@@ -39,19 +36,28 @@ app.get('/:sessionId', async (req, res, next) => {
   try {
     let { playerName } = req.query
 
-    let _session
+    let _session = await session.findOne({ id: req.params.sessionId })
+
+    if (!_session) {
+      return res.sendStatus(404)
+    }
+
+    if (
+      _session.homePlayerName 
+      && _session.awayPlayerName 
+      && (playerName != _session.homePlayerName && playerName != _session.awayPlayerName)) {
+        return res.sendStatus(403)
+      }
 
     if (!playerName) {
       playerName = generateRandomName()
-      _session = await session.findOneAndUpdate({
+      await session.updateOne({
         id: req.params.sessionId
       }, {
         $set: {
           awayPlayerName: playerName
         }
       })
-    } else {
-      _session = await session.findOne({ id: req.params.sessionId })
     }
     res.json({ session: _session, playerName })
   } catch (e) {next(e)}
@@ -75,7 +81,11 @@ app.post('/:sessionId', async (req, res, next) => {
       id: req.params.sessionId
     }, {
       $set: {
-        board
+        board,
+        latestMove: {
+          i,
+          j
+        }
       }
     })
 
@@ -83,8 +93,6 @@ app.post('/:sessionId', async (req, res, next) => {
   } catch(e) { next(e) }
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}!`)
-});
+app.listen(port);
 
 mongoose.connect(`mongodb://127.0.0.1/tic-tac-toe`)

@@ -7,7 +7,11 @@ const sessionSchema = mongoose.Schema({
   board: Array,
   boardSize: Number,
   homePlayerName: String,
-  awayPlayerName: String
+  awayPlayerName: String,
+  latestMove: {
+    i: Number,
+    j: Number
+  }
 })
 
 class Session extends mongoose.Model {
