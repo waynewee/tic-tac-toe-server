@@ -13,7 +13,7 @@ const production = process.env.NODE_ENV === "production";
 let origin = `http://localhost:3000`;
 
 if (production) {
-  origin = `http://18.189.74.209/`;
+  origin = `http://18.189.74.209`;
 }
 
 let corsOptions = {
